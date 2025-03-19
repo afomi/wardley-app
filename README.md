@@ -1,4 +1,12 @@
-# Wardley
+# Wardley App
+
+An open-source exploration of Wardley Mapping.
+
+Value streams, flow, topology, evolution, gameplay.
+
+[Learn more about Wardley Mapping](https://blog.gardeviance.org/2015/02/an-introduction-to-wardley-value-chain.html). Try it yourself!
+
+### Development
 
 To start your Phoenix server:
 
@@ -9,7 +17,7 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
-## Learn more
+### Learn more
 
   * Official website: https://www.phoenixframework.org/
   * Guides: https://hexdocs.pm/phoenix/overview.html
