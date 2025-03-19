@@ -5,8 +5,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 const canvas = document.getElementById('wardleyMapCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 
-const width = window.innerHeight;
-const height = 800;
+const width = window.innerWidth;
+const height = window.innerHeight;
 renderer.setSize(width, height);
 
 // Create the scene.
@@ -15,9 +15,15 @@ scene.background = new THREE.Color( 0xF4F4F4 );
 
 // Use an orthographic camera so that 1 unit = 1 pixel in our 2D layout.
 // left, right, top, bottom, near, far are set based on our canvas dimensions.
-const camera = new THREE.OrthographicCamera(-width, width, height, -height, -2000, 2000);
-camera.position.set(0, 0, 0);
-camera.lookAt(new THREE.Vector3(width / 2, height / 2, 0));
+const camera = new THREE.OrthographicCamera(0, width, height, 0, -1000, 2000);
+camera.position.set(0, width / 2, width / 2);
+camera.lookAt(new THREE.Vector3(width / 2, height / 2, -100));
+
+// Add Axes Helper
+// The X axis is red. The Y axis is green. The Z axis is blue.
+const axesHelper = new THREE.AxesHelper( 500 );
+axesHelper.position.set(-10, -10, 0);
+scene.add( axesHelper );
 
 // Setup OrbitControls with rotation disabled (2D zoom only).
 const controls = new OrbitControls(camera, canvas);
@@ -44,7 +50,7 @@ const container = document.getElementById('wardley-map-container');
 
 const xAxisLabel = document.createElement('div');
 xAxisLabel.textContent = 'Evolution';
-xAxisLabel.style.position = 'absolute';
+xAxisLabel.style.position = 'fixed';
 xAxisLabel.style.bottom = '10px';
 xAxisLabel.style.left = '50%';
 xAxisLabel.style.transform = 'translateX(-50%)';
@@ -54,7 +60,7 @@ container.appendChild(xAxisLabel);
 
 const yAxisLabel = document.createElement('div');
 yAxisLabel.textContent = 'Visibility';
-yAxisLabel.style.position = 'absolute';
+yAxisLabel.style.position = 'fixed';
 yAxisLabel.style.top = '50%';
 yAxisLabel.style.left = '10px';
 yAxisLabel.style.transform = 'translateY(-50%) rotate(-90deg)';
@@ -62,10 +68,29 @@ yAxisLabel.style.fontFamily = 'sans-serif';
 yAxisLabel.style.fontSize = '20px';
 container.appendChild(yAxisLabel);
 
-// --- Create 7 nodes as white circles with black outlines ---
+// --- Create nodes as white circles with black outlines ---
 const nodesGroup = new THREE.Group();
-const numNodes = 7;
-for (let i = 0; i < numNodes; i++) {
+
+nodes = [
+  {
+    x: 50,
+    y: 50,
+    name: "this"
+  },
+  {
+    x: 70,
+    y: 70,
+    name: "that"
+  },
+  {
+    x: 40,
+    y: 50,
+    name: "other"
+  },
+];
+
+for (let i = 0; i < nodes.length; i++) {
+  const thisNode = nodes[i];
   // Create the circle (node) with radius 10.
   const circleGeometry = new THREE.CircleGeometry(10, 32);
   const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -86,6 +111,10 @@ for (let i = 0; i < numNodes; i++) {
   // x: between -400 and 400, y: between -600 and 600.
   node.position.x = Math.random() * width;
   node.position.y = Math.random() * height;
+
+  const coords = translateCoordinates(thisNode.x, thisNode.y)
+  node.position.x = coords.x;
+  node.position.y = coords.y;
 
   nodesGroup.add(node);
 }
@@ -121,3 +150,12 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
+
+
+// Helper function
+function translateCoordinates(normX, normY) {
+  return {
+    x: (normX / 100) * width,
+    y: (normY / 100) * height
+  };
+}
