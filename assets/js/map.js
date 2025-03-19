@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 
 // Get the canvas and set up the renderer.
 const canvas = document.getElementById('wardleyMapCanvas');
@@ -29,6 +30,15 @@ scene.add( axesHelper );
 const controls = new OrbitControls(camera, canvas);
 controls.enableRotate = false;  // Lock rotation for now.
 controls.enablePan = false;     // Optionally lock panning.
+// controls.enablePan = false;     // Optionally lock panning.
+
+// Set up the CSS2DRenderer for text labels.
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(width, height);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0px';
+labelRenderer.domElement.style.pointerEvents = 'none';
+document.getElementById('wardley-map-container').appendChild(labelRenderer.domElement);
 
 // --- Draw 5 vertical lines evenly spaced ---
 const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
@@ -116,6 +126,21 @@ for (let i = 0; i < nodes.length; i++) {
   node.position.x = coords.x;
   node.position.y = coords.y;
 
+  // Create the text label using a DOM element.
+  const labelDiv = document.createElement('div');
+  labelDiv.textContent = thisNode.name;
+  labelDiv.style.fontSize = '16px';
+  labelDiv.style.color = 'black';
+  labelDiv.style.backgroundColor = 'rgba(255,255,255,0.7)';
+  labelDiv.style.padding = '2px';
+  labelDiv.style.paddingLeft = '10px';
+  labelDiv.style.paddingRight = '10px';
+  labelDiv.style.borderRadius = '4px';
+  const label = new CSS2DObject(labelDiv);
+  // Position the label above the node.
+  label.position.set(0, 15, 0);
+  node.add(label);
+
   nodesGroup.add(node);
 }
 scene.add(nodesGroup);
@@ -148,6 +173,8 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+
 }
 animate();
 
